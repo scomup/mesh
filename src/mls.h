@@ -233,7 +233,7 @@ namespace pcl
 
   };
 
-  /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm
+  /** \brief MovingLeastSquaresM represent an implementation of the MLS (Moving Least Squares) algorithm
     * for data smoothing and improved normal estimation. It also contains methods for upsampling the
     * resulting cloud based on the parametric fit.
     * Reference paper: "Computing and Rendering Point Set Surfaces" by Marc Alexa, Johannes Behr,
@@ -247,11 +247,11 @@ namespace pcl
     * \ingroup surface
     */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
+  class MovingLeastSquaresM : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<MovingLeastSquaresM<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const MovingLeastSquaresM<PointInT, PointOutT> > ConstPtr;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -292,7 +292,7 @@ namespace pcl
       };
 
       /** \brief Empty constructor. */
-      MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
+      MovingLeastSquaresM () : CloudSurfaceProcessing<PointInT, PointOutT> (),
                               normals_ (),
                               distinct_cloud_ (),
                               search_method_ (),
@@ -318,7 +318,7 @@ namespace pcl
                               {};
 
       /** \brief Empty destructor */
-      virtual ~MovingLeastSquares () {}
+      virtual ~MovingLeastSquaresM () {}
 
 
       /** \brief Set whether the algorithm should also store the normals computed
@@ -357,7 +357,7 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
-      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::setPolynomialFit] setPolynomialFit is deprecated. Please use setPolynomialOrder instead.")
+      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquaresM::setPolynomialFit] setPolynomialFit is deprecated. Please use setPolynomialOrder instead.")
       inline void
       setPolynomialFit (bool polynomial_fit)
       {
@@ -375,7 +375,7 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::getPolynomialFit] getPolynomialFit is deprecated. Please use getPolynomialOrder instead.")
+      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquaresM::getPolynomialFit] getPolynomialFit is deprecated. Please use getPolynomialOrder instead.")
       inline bool
       getPolynomialFit () const { return (order_ > 1); }
 
@@ -745,16 +745,16 @@ namespace pcl
 
       /** \brief Abstract class get name method. */
       std::string
-      getClassName () const { return ("MovingLeastSquares"); }
+      getClassName () const { return ("MovingLeastSquaresM"); }
   };
 
-  /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquares for better maintainability.
+  /** \brief MovingLeastSquaresOMP implementation has been merged into MovingLeastSquaresM for better maintainability.
   * \note Keeping this empty child class for backwards compatibility.
   * \author Robert Huitl
   * \ingroup surface
   */
   template <typename PointInT, typename PointOutT>
-  class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, PointOutT>
+  class MovingLeastSquaresOMP : public MovingLeastSquaresM<PointInT, PointOutT>
   {
     public:
       /** \brief Constructor for parallelized Moving Least Squares

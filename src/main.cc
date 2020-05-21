@@ -136,16 +136,16 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr
 
   pcl::PointCloud<pcl::PointNormal>::Ptr xyz_cloud_smoothed (new pcl::PointCloud<pcl::PointNormal> ());
 
-  pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal> mls;
+  pcl::MovingLeastSquaresM<pcl::PointXYZ, pcl::PointNormal> mls;
   mls.setInputCloud (xyz_cloud);
   mls.setSearchRadius (search_radius);
   if (sqr_gauss_param_set) mls.setSqrGaussParam (sqr_gauss_param);
   mls.setPolynomialOrder (polynomial_order);
 
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::SAMPLE_LOCAL_PLANE);
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
-  mls.setUpsamplingMethod (pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal>::NONE);
+//  mls.setUpsamplingMethod (MovingLeastSquaresM<PointXYZ, PointNormal>::SAMPLE_LOCAL_PLANE);
+//  mls.setUpsamplingMethod (MovingLeastSquaresM<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
+//  mls.setUpsamplingMethod (MovingLeastSquaresM<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
+  mls.setUpsamplingMethod (pcl::MovingLeastSquaresM<pcl::PointXYZ, pcl::PointNormal>::NONE);
   mls.setPointDensity (60000 * int (search_radius)); // 300 points in a 5 cm radius
   mls.setUpsamplingRadius (0.025);
   mls.setUpsamplingStepSize (0.015);

@@ -55,7 +55,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::process (PointCloudOut &output)
 {
   // Reset or initialize the collection of indices
   corresponding_input_indices_.reset (new PointIndices);
@@ -168,7 +168,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::computeMLSPointNormal (int index,
                                                                      const std::vector<int> &nn_indices,
                                                                      PointCloudOut &projected_points,
                                                                      NormalCloud &projected_points_normals,
@@ -179,7 +179,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   //       (MovingLeastSquaresOMP calls it from multiple threads)
 
   mls_result.computeMLSSurface<PointInT> (*input_, index, nn_indices, search_radius_, order_);
-
+  if(mls_result.curvature > 0.04)
+    return;
   switch (upsample_method_)
   {
     case (NONE):
@@ -246,7 +247,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
 }
 
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::addProjectedPointNormal (int index,
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::addProjectedPointNormal (int index,
                                                                        const Eigen::Vector3d &point,
                                                                        const Eigen::Vector3d &normal,
                                                                        double curvature,
@@ -278,7 +279,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::addProjectedPointNormal (int index
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
 {
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
@@ -362,7 +363,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &output)
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::performUpsampling (PointCloudOut &output)
 {
 
   if (upsample_method_ == DISTINCT_CLOUD)
@@ -816,7 +817,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
           u_pow *= u_coord;
         }
       }
-      std::cout<<P<<std::endl;
+      //std::cout<<P<<std::endl;
 
       // Computing coefficients
       P_weight = P * weight_vec.asDiagonal ();
@@ -829,7 +830,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
-pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
                                                                           IndicesPtr &indices,
                                                                           float voxel_size) :
   voxel_grid_ (), bounding_min_ (), bounding_max_ (), data_size_ (), voxel_size_ (voxel_size)
@@ -855,7 +856,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
 {
   HashMap new_voxel_grid = voxel_grid_;
   for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid_.begin (); m_it != voxel_grid_.end (); ++m_it)
@@ -884,7 +885,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT &point_in,
+pcl::MovingLeastSquaresM<PointInT, PointOutT>::copyMissingFields (const PointInT &point_in,
                                                                  PointOutT &point_out) const
 {
   PointOutT temp = point_out;
@@ -894,7 +895,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT 
   point_out.z = temp.z;
 }
 
-#define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
+template class pcl::MovingLeastSquaresM<pcl::PointXYZ, pcl::PointNormal>; //追加
+#define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresM<T,OutT>;
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;
 
 #endif    // PCL_SURFACE_IMPL_MLS_H_
